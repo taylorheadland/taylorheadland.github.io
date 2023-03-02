@@ -5,10 +5,19 @@ project:
 website:
   title: "Taylor Headland"
   navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
+    right:
+      - href: about.qmd
+        text: About
+      - href: publications.qmd
+        text: Publications
+      - href: blog.qmd
+        text: Blog
+      - href: https://twitter.com/TaylorHeadland
+        icon: Twitter
+      - href: https://github.com/taylorheadland
+        icon: github
+   search: true
+   
 
 format:
   html:
