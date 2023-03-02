@@ -1,5 +1,5 @@
 ---
-title: "taylorheadland.github.io"
+title: "Taylor Headland"
 ---
 
 This is a Quarto website.
