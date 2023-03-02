@@ -16,7 +16,7 @@ website:
         icon: Twitter
       - href: https://github.com/taylorheadland
         icon: github
-   search: true
+  search: true
    
 
 format:
