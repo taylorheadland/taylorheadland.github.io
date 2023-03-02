@@ -5,6 +5,8 @@ project:
 website:
   title: "Taylor Headland"
   navbar:
+    background: "#FFFFFF"
+    foreground: "#FFFFFF"
     right:
       - href: about.qmd
         text: About
