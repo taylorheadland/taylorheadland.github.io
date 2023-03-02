@@ -4,7 +4,7 @@ about:
   template: jolla
   image: Taylor_headshot.jpeg
   image-shape: round
-  image-width: 30em
+  image-width: 20em
 ---
 
 
