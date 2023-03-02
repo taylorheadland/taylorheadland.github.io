@@ -2,6 +2,7 @@
 title: ""
 about: 
   template: jolla
+  image-shape: round
 include-before-body: Taylor_headshot.jpeg 
 ---
 
