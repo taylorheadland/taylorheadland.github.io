@@ -2,8 +2,8 @@
 title: ""
 about: 
   template: jolla
+  image: Taylor_headshot.jpeg
   image-shape: round
-include-before-body: Taylor_headshot.jpeg 
 ---
 
 
