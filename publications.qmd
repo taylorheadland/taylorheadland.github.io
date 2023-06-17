@@ -6,4 +6,4 @@ format: html
 
 ## 2021
 
-Headland, T., Ostendorf, B., & Taggart, D. (2021) The behavioral responses of a nocturnal burrowing marsupial (Lasiorhinus latifrons) to drone flight. Ecology and Evolution, 11, 12173-- 12181. https://doi.org/10.1002/ ece3.7981
+Headland, T., Ostendorf, B., & Taggart, D. (2021) The behavioral responses of a nocturnal burrowing marsupial (Lasiorhinus latifrons) to drone flight. Ecology and Evolution, 11, 12173-- 12181. [https://doi.org/10.1002/ ece3.7981](https://doi.org/10.1002/ ece3.7981)
