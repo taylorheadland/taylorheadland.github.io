@@ -15,4 +15,37 @@ about:
       href: "https://www.linkedin.com/in/taylor-headland-230236163/"
     - icon: google
       href: "https://scholar.google.com.au/citations?user=Fh3z7X4AAAAJ&hl=en"
+
+---
+
+:::{#hero-heading}
+
+:::{.column-body-outset}
+
+## Education
+
+**Ph. D.** | June 2021 – Present  
+College of Science and Engineering, Flinders University  
+  * Thesis: *The Ecology of the Nankeen Kestrel across the Urban/Rural gradient *
+  
+**Honours ** | February 2020 - March 2021
+
+**Bachelor of Science (Animal Science) ** | March 2016 - November 2019
+School of Animal and Veterinary Sciences, University of Adelaide
+
+
+
+-----------------------------------------------------------------------------
+
+## Experience
+
+**Postgraduate Research** | June 2021 - Present  
+School of Biological Sciences, UNSW
+
+**Bird Surveys** | January 2020 - Present
+A Rocha Australia, Birds SA
+
+:::
+
+:::
 ---
