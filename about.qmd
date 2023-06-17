@@ -1,9 +1,18 @@
 ---
-title: "About"
+title: "Taylor Headland"
+image: "Taylor_headshot.jpeg"
+about: 
+  template: trestles
+  image-shape: round
+  links: 
+    - icon: envelope
+      href: "mailto:taylor.headland@gmail.com"
+    - icon: twitter
+      href: "https://twitter.com/TaylorHeadland"
+    - icon: github
+      url:  "https://github.com/taylorheadland"
+    - icon: linkedin
+      href: "https://www.linkedin.com/in/taylor-headland-230236163/"
+    - icon: google
+      href: "https://scholar.google.com.au/citations?user=Fh3z7X4AAAAJ&hl=en"
 ---
-
-About this site
-
-```{r}
-1 + 1
-```
