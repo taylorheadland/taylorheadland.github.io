@@ -7,3 +7,7 @@ format: html
 ## 2021
 
 Headland, T., Ostendorf, B., & Taggart, D. (2021) The behavioral responses of a nocturnal burrowing marsupial (Lasiorhinus latifrons) to drone flight. Ecology and Evolution, 11, 12173-- 12181. <https://onlinelibrary.wiley.com/doi/full/10.1002/ece3.7981>
+
+## 2023
+
+Headland, T., Colombelli-Négrel, D., Callaghan, C.T. *et al.* Smaller Australian raptors have greater urban tolerance. *Sci Rep* **13**, 11559 (2023). <https://doi.org/10.1038/s41598-023-38493-z>
