@@ -5,6 +5,7 @@ project:
 website:
   title: "Taylor Headland"
   navbar:
+    logo: Images/favicon-32x32.png
     right:
       - href: about.qmd
         text: About
