@@ -4,6 +4,7 @@ project:
 
 website:
   title: "Taylor Headland"
+  favicon: Images/favicon.ico
   navbar:
     logo: Images/favicon-32x32.png
     right:
