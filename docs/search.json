@@ -46,7 +46,7 @@
     "href": "blog.html",
     "title": "Blog",
     "section": "",
-    "text": "No matching items"
+    "text": "Relative abundance of Wedge-tailed Eagles in Australia\n\n\n\n\n\n\n\nmodelling\n\n\n\n\nEagles are cool, so lets find out where and how many there are across Australia!\n\n\n\n\n \n\n\n\n\nNo matching items"
   },
   {
     "objectID": "publications.html#section-1",
@@ -54,5 +54,12 @@
     "title": "Publications",
     "section": "2023",
     "text": "2023\nHeadland, T., Colombelli-Négrel, D., Callaghan, C.T. et al. Smaller Australian raptors have greater urban tolerance. Sci Rep 13, 11559 (2023). https://doi.org/10.1038/s41598-023-38493-z"
+  },
+  {
+    "objectID": "blog/Wedge-tailed Eagle Analysis/index.html",
+    "href": "blog/Wedge-tailed Eagle Analysis/index.html",
+    "title": "Relative abundance of Wedge-tailed Eagles in Australia",
+    "section": "",
+    "text": "Throughout the time that I’ve been undertaking my PhD I’ve gained skills in data science and statistical programming, particularly with the language R. I started learning R during my Honours year, but have been able to take it to the next level with my PhD in terms of the complexity and scope of use. Although daunting at times, learning to code has been the most enjoyable part of my PhD and something that I look forward to hopefully doing as part of a job sometime in the future!\nIn this article I’m going to estimate the relative abundance of the Wedge-tailed Eagle in Australia using data from the community science platform, eBird. This platform boasts more than ___ records of birds across the globe, and is an invaluable conservation resource to study bird populations and how they change across time and space. I decided on the Wedge-tailed Eagle, because as a birder that specifically studies raptors, you can’t get much cooler than an Eagle!\nThis analysis largely follows the work of Matt Strimas-Mackey and the wonderful work that he and the eBird team at Cornell University in America put together in the form of a best practices guide when working with eBird data. This has been an extremely helpful resources throughout my PhD and I couldn’t have done a few of my chapters without it! Here is a link to the resource: https://ebird.github.io/ebird-best-practices/\nEnough chit chat, lets get to the analysis!\nFirst up, lets load the packages required for the analysis.\n\nlibrary(tidyverse)\nlibrary(tidymodels)\nlibrary(blockCV)\nlibrary(auk)\nlibrary(ebirdst)\nlibrary(auk)\nlibrary(gridExtra)\nlibrary(mccf1)\nlibrary(ranger)\nlibrary(scam)\nlibrary(sf)\nlibrary(terra)"
   }
 ]
