@@ -1,6 +1,6 @@
 ---
 title: "Taylor Headland"
-image: "Iamges/Taylor_headshot.jpeg"
+image: "Images/Taylor_headshot.jpeg"
 about: 
   template: trestles
   image-shape: round
