@@ -6,4 +6,6 @@ listing:
   sort: "date desc"
   type: default
   categories: true
+title-block-banner: "#1434A4"
+title-block-banner-color: "#ffffff"
 ---

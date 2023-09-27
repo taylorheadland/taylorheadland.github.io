@@ -7,6 +7,8 @@ website:
   favicon: Images/favicon.ico
   navbar:
     logo: Images/favicon-32x32.png
+    background: "#FFFFFF"
+    foreground: "#1434A4"
     right:
       - href: about.qmd
         text: About

@@ -1,2 +1,111 @@
 /* css styles */
+/* This must remain at the top of this file.                 */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Zen+Tokyo+Zoo&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');  
 
+:root {
+  --background-blue: #1434A4;
+  --accent-blue: #1434A4;
+  --mono-font: 'Fira Code', monospace;
+  --header-font: 'Lora', serif;
+}
+
+/*-- Additional custom styles --*/
+/* Add any additional CSS rules below                      */
+
+.navbar-title {
+  position: relative;
+  cursor: pointer;
+
+}
+
+.navbar-title:after,
+.navbar-title:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--accent-blue) !important;
+      transition: all 0.3s ease;
+      transform: scale(0.85);
+}
+.navbar-title:hover:before {
+      top: 0;
+      transform: scale(1);
+}
+.navbar-title:hover:after {
+      transform: scale(1);
+      background-color: var(--background-blue) !important;
+}
+
+
+a.nav-link,
+a.nav-link:after,
+a.nav-link:before {
+  transition: all .3s;
+}
+
+a.nav-link {
+  position: relative;
+}
+
+a.nav-link:after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 0%;
+  content: '.'; /* make invisible, dot beneath links */
+  color: transparent;
+  background: var(--background-blue) !important;
+  height: 2px;
+}
+
+a.nav-link:hover:after {
+  width: 70%;
+}
+
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: var(--background-blue) !important;
+}
+
+.sidebar a.nav-link:hover:after {
+  width: 0%;
+}
+
+@media only screen and (max-width: 600px) {
+  a.nav-link:hover:after {
+    width: 0%;
+  }
+
+  .navbar-title:hover:after {
+    top: 100%;
+    transform: scale(1);
+  }
+}
+
+
+.panel-caption, caption, .figure-caption {
+    font-size: .78rem;
+    margin-left: 8%;
+    margin-right: 8%;
+    text-align: center;
+}
+
+h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
+  font-family: 'DM Sans', sans-serif;
+}
+
+h1, .h1 {
+    font-size: calc(2rem + 1.14vw);
+}
