@@ -94,6 +94,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit"
   }
 }</script>
+<style>
+
+      .quarto-title-block .quarto-title-banner h1,
+      .quarto-title-block .quarto-title-banner h2,
+      .quarto-title-block .quarto-title-banner h3,
+      .quarto-title-block .quarto-title-banner h4,
+      .quarto-title-block .quarto-title-banner h5,
+      .quarto-title-block .quarto-title-banner h6
+      {
+        color: #ffffff;
+      }
+
+      .quarto-title-block .quarto-title-banner {
+        color: #ffffff;
+background: #1434A4;
+      }
+</style>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -149,59 +166,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Relative abundance of Wedge-tailed Eagles in Australia</h1>
+                  <div>
+        <div class="description">
+          <p>Eagles are cool, so lets find out where and how many there are across Australia!</p>
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">modelling</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Relative abundance of Wedge-tailed Eagles in Australia</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">modelling</div>
-  </div>
-  </div>
-
-<div>
-  <div class="description">
-    <p>Eagles are cool, so lets find out where and how many there are across Australia!</p>
-  </div>
-</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
-<div class="quarto-title-meta">
 
-    
-  
-    
-  </div>
-  
-
-</header>
 
 <p>Throughout the time that I’ve been undertaking my PhD I’ve gained skills in data science and statistical programming, particularly with the language R. I started learning R during my Honours year, but have been able to take it to the next level with my PhD in terms of the complexity and scope of use. Although daunting at times, learning to code has been the most enjoyable part of my PhD and something that I look forward to hopefully doing as part of a job sometime in the future!</p>
-<p>In this article I’m going to estimate the relative abundance of the Wedge-tailed Eagle in Australia using data from the community science platform, eBird. This platform boasts more than ___ records of birds across the globe, and is an invaluable conservation resource to study bird populations and how they change across time and space. I decided on the Wedge-tailed Eagle, because as a birder that specifically studies raptors, you can’t get much cooler than an Eagle!</p>
+<p>In this article I’m going to estimate the relative abundance of the Wedge-tailed Eagle in Australia using data from the community science platform, eBird. This platform boasts a staggering 1.3 billion records of birds across the globe, and is an invaluable conservation resource to study bird populations and how they change across time and space. I decided on the Wedge-tailed Eagle, because as a birder that specifically studies raptors, you can’t get much cooler than an Eagle!</p>
 <p>This analysis largely follows the work of Matt Strimas-Mackey and the wonderful work that he and the eBird team at Cornell University in America put together in the form of a best practices guide when working with eBird data. This has been an extremely helpful resources throughout my PhD and I couldn’t have done a few of my chapters without it! Here is a link to the resource: <a href="https://ebird.github.io/ebird-best-practices/" class="uri">https://ebird.github.io/ebird-best-practices/</a></p>
 <p>Enough chit chat, lets get to the analysis!</p>
-<p>First up, lets load the packages required for the analysis.</p>
+<p>First up, lets load the packages and data required for the analysis.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(blockCV)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(auk)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ebirdst)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(auk)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ebirdst)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(auk)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mccf1)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scam)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mccf1)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scam)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Lets also load in a shapefile of Australia so that we can make pretty look maps of our predictions.</p>
+<p>Data within community science programs are often subject to spatial and temporal biases. Australia represents a fantastic example of spatial sampling bias, as illustrated below by the figure. The majority of eBird checklists fall into coastal areas where people live, instead of being evenly distributed across the landscape. Checklists also follow things like roads, which is evident by the line of checklists spanning the Stuart Highway from mid-South Australia up to the Northern Territory. People are usually more available on weekends to contribute to community science projects, and there are studies that document this ‘Weekend effect’. To minimise these biases, we will perform spatiotemporal subsampling to the data by selecting a checklist for every week of the available data within a defined 3x3 km grid cell.</p>
+<p>Lastly, we will select the predictors for the model and hold aside some of the data to for model testing</p>
+<p>Now we are ready to model the data! We will use random forest models to achieve a prediction for the relative abundance of Wedge-tailed Eagles across Australia. The first model is a classification random forest that will achieve a measure of encounter rate, which is _____.</p>
 
 
 
