@@ -24,16 +24,15 @@ Enough chit chat, lets get to the analysis!
 First up, lets load the packages and data required for the analysis.
 
 ```{r package and data loading, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(auk)
-library(ebirdst)
-library(auk)
-library(gridExtra)
-library(mccf1)
-library(ranger)
-library(scam)
-library(sf)
-library(terra)
+library(tidyverse) #tidy data/wrangling
+library(auk) #eBird data wrangling
+library(ebirdst) #spatiotemporal subsampling
+library(gridExtra) #plotting
+library(mccf1) # modelling
+library(ranger) #modelling
+library(scam) #modelling
+library(sf) #spatial data operations
+library(terra) #raster data operations
 ```
 
 Lets also load in a shapefile of Australia so that we can make pretty look maps of our predictions.
