@@ -7,6 +7,6 @@ about:
   image-width: 25em
 ---
 
-I'm a PhD student studying urban raptor ecology in Adelaide, South Australia. My project focuses on the Nankeen Kestrel, a small falcon that inhabits urban and rural areas, and how its ecology differs across the urban/rural gradient. I enjoy birding, and have a particular affection for raptors. Passionate about using R and citizen science (e.g. eBird) to find patterns and trends of Australian raptor populations to aid in their conservation. Follower of Jesus and lover of music.
+I'm a PhD student studying urban raptor ecology in Adelaide, South Australia. My project focuses on the Nankeen Kestrel, a small falcon that inhabits urban and rural areas, and how its ecology differs across the urban/rural gradient. I enjoy birding, and particularly enjoy searching for birds of prey. I;m passionate about using statistical programming (e.g. R) combined with citizen science observations (e.g. eBird, Birdata) to find patterns and trends of Australian raptor populations to aid in their conservation.
 
 ------------------------------------------------------------------------
