@@ -1,0 +1,256 @@
+---
+title: "Modelling the encounter rate of Wedge-tailed Eagles in South Australia"
+description: |
+  Who doesn't love seeing a Wedgie soaring in the thermals?! Let's find out where they are most likely to be seen in South Australia. 
+date: ""
+title-block-banner: "#1434A4"
+title-block-banner-color: "#ffffff"
+categories: 
+  - Modelling
+  - Citizen Science
+  - Raptors
+freeze: true
+format: html
+editor_options:
+  chunk_output_type: inline
+---
+
+Throughout the time that I've been undertaking my PhD I've gained skills in data science and statistical programming, particularly with the language R. I started learning R during my Honours year, but have been able to hone my skills during the PhD in terms of the complexity and scope of use. Although daunting at times, learning to code has been the most enjoyable part of my PhD and something that I look forward to hopefully doing as part of a job sometime in the future!
+
+In this article I'm going to estimate the encounter rate of the Wedge-tailed Eagle in South Australia during the breeding season using data from the community science platform, eBird. This platform boasts a staggering 1.3 billion records of birds across the globe, and is an invaluable conservation resource to study bird populations and how they change across time and space. I decided on the Wedge-tailed Eagle, because as a birder that specifically studies raptors, you can't get much cooler than an Eagle!
+
+This analysis largely follows the work of Matt Strimas-Mackey and the wonderful work that he and the eBird team at Cornell University in America put together in the form of a best practices guide when working with eBird data. This has been an extremely helpful resource throughout my PhD and I couldn't have done a few of my chapters without it! Here is a link to the resource: <https://ebird.github.io/ebird-best-practices/>
+
+Enough chit chat, lets get to the analysis!
+
+First up, lets load the packages and data required for the analysis.
+
+```{r}
+#| label: package-setup
+#| echo: true
+#| warning: false
+
+library(tidyverse) #tidy data/wrangling
+library(auk) #eBird data wrangling
+library(ebirdst) #spatiotemporal subsampling
+library(mccf1) # modelling
+library(ranger) #modelling
+library(scam) #modelling
+library(sf) #spatial data operations
+library(terra) #raster data operations
+library(tidyterra) #raster plotting
+library(scales) # pretty scales
+library(paletteer) # colours for plotting
+```
+
+```{r}
+#| label: data-load
+#| echo: true
+#| warning: false
+
+# set random number seed to ensure fully repeatable results
+set.seed(1)
+
+# habitat variables: landcover and elevation
+habitat <- read_csv(here::here("data/WTE_Analysis/WTE_environmental-variables_checklists.csv"))
+
+# zero-filled ebird data combined with habitat data
+checklists <- read_csv(here::here("data/WTE_Analysis/eBird_WedgeTailedEagle_zf_SA.csv")) %>% 
+  inner_join(habitat, by = "checklist_id") %>% 
+  #subset to breeding season months
+  dplyr::mutate(month = month(observation_date)) %>% 
+  dplyr::filter(month %in% c(6, 7, 8, 9, 10, 11, 12))
+
+# prediction grid
+pred_grid <- read_csv(here::here("data/WTE_Analysis/WTE_environmental-variables_prediction-grid.csv"))
+
+r <- rast(here::here("data/WTE_Analysis/WTE_prediction-grid.tif")) 
+crs <- st_crs(r)
+```
+
+Lets also load in a shapefile of South Australia so that we can make pretty looking maps of our predictions.
+
+```{r}
+#| label: maps-load 
+#| echo: true 
+#| warning: false 
+#| SA <- read_sf(here::here("data/WTE_Analysis/South_Australia.shp"))
+```
+
+Data within community science programs are often subject to spatial and temporal biases, as well as large class imbalances. Australia represents a fantastic example of spatial sampling bias, as illustrated below by the figure. The majority of eBird checklists fall into coastal areas where people live, instead of being evenly distributed across the landscape. Checklists also follow things like roads, which is evident by the line of checklists spanning the Stuart Highway from mid-South Australia up to the Northern Territory. People are usually more available on weekends to contribute to community science projects, and there are studies that document this 'Weekend effect' ([see here](https://link.springer.com/article/10.1007/s00484-012-0598-7)). And lastly, there are usually many more non-detections than detection present for many species within the eBird dataset, leading to class imbalance. To minimise these biases, we will perform spatiotemporal subsampling to the data by selecting a checklist for every week of the available data within a defined 3x3 km grid cell.
+
+```{r}
+#| label: elevation-prep
+#| echo: false
+#| warning: false
+
+#for creating a pretty terrain map for the background
+elev <- rast(here::here("data/WTE_analysis/elevation_SA.tif"))
+
+elev
+
+elev <- elev %>% 
+  crop(SA, mask = T)
+
+names(elev) <- "alt"
+
+elev <- elev %>%
+  mutate(alt = pmax(0, alt))
+
+## Create hillshade effect
+
+slope <- terrain(elev, "slope", unit = "radians")
+aspect <- terrain(elev, "aspect", unit = "radians")
+hill <- shade(slope, aspect, 30, 270)
+
+# normalize names
+names(hill) <- "shades"
+
+# Hillshading, but we need a palette
+pal_greys <- hcl.colors(1000, "Grays")
+
+# Use a vector of colors
+index <- hill %>%
+  mutate(index_col = rescale(shades, to = c(1, length(pal_greys)))) %>%
+  mutate(index_col = round(index_col)) %>%
+  pull(index_col)
+
+# Get cols
+vector_cols <- pal_greys[index]
+
+hill_plot <- ggplot() +
+  geom_spatraster(
+    data = hill, fill = vector_cols, maxcell = Inf,
+    alpha = 1)
+
+# Try some options, but we need to be aware of the values of our raster
+r_limits <- minmax(elev) %>% as.vector()
+
+# Rounded to lower and upper 200
+r_limits <- c(floor(r_limits[1] / 200), ceiling(r_limits[2] / 200)) * 200
+
+# And making min value to 0.
+r_limits <- pmax(r_limits, 0)
+
+base_plot <- hill_plot +
+  # Avoid resampling with maxcell
+  geom_spatraster(data = elev, maxcell = Inf) +
+  scale_fill_hypso_tint_c(
+    limits = r_limits,
+    palette = "dem_poster",
+    labels = label_comma(),
+    breaks = scales::pretty_breaks(),
+    guide = guide_colorbar(title = "Elevation (m)")) +
+  theme_bw()+
+  coord_sf(expand = F)+
+  theme(panel.background = element_rect(fill = 'lightblue'))+
+  geom_point(data = checklists, aes(x = longitude, y = latitude, alpha = 0.1), show.legend = FALSE)+
+  ggspatial::annotation_north_arrow() +
+  ggspatial::annotation_scale(pad_x = unit(3, "cm"))+
+  labs(title = "eBird checklists in South Australia", 
+       subtitle = "n = 29,386",
+       x = "",
+       y = "")
+
+base_plot
+```
+
+Before we subsample the data, we will split the data into a testing and training set. We will use 80% of the data to train the model, and the remaining 20% to test it.
+
+```{r}
+#| label: data-split
+#| echo: true
+#| warning: false
+
+checklists <- checklists %>% 
+  mutate(type = if_else(runif(nrow(.)) <= 0.8, "train", "test"))
+
+table(checklists$type) / nrow(checklists)
+```
+
+Now we subsample the data.
+
+```{r}
+# sample one checklist per 3km x 3km x 1 week grid for each year
+# sample detection/non-detection independently 
+checklists_ss <- grid_sample_stratified(checklists,
+                                        obs_column = "species_observed",
+                                        sample_by = "type")
+```
+
+We will hold the training data separate and select the predictors for the model.
+
+```{r}
+checklists_train <- checklists_ss %>% 
+  filter(type == "train") %>% 
+  # select only the columns to be used in the model
+  select(species_observed, observation_count,
+         year, day_of_year, hours_of_day,
+         effort_hours, effort_distance_km, effort_speed_kmph,
+         number_observers, 
+         starts_with("pland_"),
+         starts_with("ed_"),
+         starts_with("elevation_"))
+```
+
+Now we are ready to model the data! We will use a random forest model to achieve a prediction for the encounter rate of Wedge-tailed Eagles across South Australia. This is a classification model that will measure the probability of an eBirder encountering a species, in our case a Wedge-tailed Eagle, on a standard eBird checklist, which is defined as a 2 km, 1 hour travelling count at the peak time of day for detecting the focal species of interest.
+
+```{r}
+#Calculate detection frequency for a balanced random forest approach
+detection_freq <- mean(checklists_train$species_observed)
+
+er_model <- ranger(formula =  as.factor(species_observed) ~ ., 
+                   data = checklists_train,
+                   importance = "impurity",
+                   probability = TRUE,
+                   replace = TRUE, 
+                   sample.fraction = c(detection_freq, detection_freq))
+```
+
+For reasons that I wont go into here, calibrating the predictions of the random forest is important. If you are interested in the code to undertake this calibration, check the hidden code chunk below.
+
+```{r}
+#| code-fold: true
+
+# predicted encounter rate based on out of bag samples
+er_pred <- er_model$predictions[, 2]
+# observed detection, converted back from factor
+det_obs <- as.integer(checklists_train$species_observed)
+# construct a data frame to train the scam model
+obs_pred <- data.frame(obs = det_obs, pred = er_pred)
+
+# train calibration model
+calibration_model <- scam(obs ~ s(pred, k = 6, bs = "mpi"), 
+                          gamma = 2,
+                          data = obs_pred)
+
+# group the predicted encounter rate into bins of width 0.02
+# then calculate the mean observed encounter rates in each bin
+er_breaks <- seq(0, 1, by = 0.02)
+mean_er <- obs_pred |>
+  mutate(er_bin = cut(pred, breaks = er_breaks, include.lowest = TRUE)) |>
+  group_by(er_bin) |>
+  summarise(n_checklists = n(),
+            pred = mean(pred), 
+            obs = mean(obs),
+            .groups = "drop")
+
+# make predictions from the calibration model
+calibration_curve <- data.frame(pred = er_breaks)
+cal_pred <- predict(calibration_model, calibration_curve, type = "response")
+calibration_curve$calibrated <- cal_pred
+
+# compared binned mean encounter rates to calibration model
+ggplot(calibration_curve) +
+  aes(x = pred, y = calibrated) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  geom_line(color = "blue") +
+  geom_point(data = mean_er, 
+             aes(x = pred, y = obs),
+             size = 2, alpha = 0.6,
+             show.legend = FALSE) +
+  labs(x = "Estimated encounter rate",
+       y = "Observed encounter rate",
+       title = "Calibration model") +
+  coord_equal(xlim = c(0, 1), ylim = c(0, 1))
+```
