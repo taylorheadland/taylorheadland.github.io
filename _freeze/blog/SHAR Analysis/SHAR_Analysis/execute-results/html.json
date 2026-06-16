@@ -1,0 +1,15 @@
+{
+  "hash": "cbf663b50a369deb8b77b8b784714227",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Package spotlight - SHAR\"\ndescription: |\n  Here I use the SHAR R package to find which habitat types the Nankeen Kestrel is associated with around greater Adelaide. \ndate: \"\"\ntitle-block-banner: \"#1434A4\"\ntitle-block-banner-color: \"#ffffff\"\ncategories: \n  - Modelling\n  - Citizen Science\n  - Raptors\nfreeze: true\nformat: html\neditor_options:\n  chunk_output_type: inline\n---\n\nUnderstanding wildlife habitat associations is a critical part of effective conservation management. In this post, I'll walk you through an R package, Species Habitat Associations in R (SHAR), that quantifies these relationships. The package website can be found [here](https://r-spatialecology.github.io/shar/index.html).\n\nFirst up, lets load the packages and data required for the analysis. We need species observation data, which I'll be grabbing from the Atlas of Living Australia (ALA) for the Nankeen Kestrel, and environmental data, which I'll be sourcing from the luna R package in the form of land cover data.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(shar) #Species Habitat Associations in R\nlibrary(tidyverse) #tidy data/wrangling\nlibrary(auk) #eBird data wrangling\nlibrary(sf) #spatial data operations\nlibrary(terra) #raster data operations\nlibrary(tidyterra) #raster plotting\nlibrary(scales) #pretty scales\nlibrary(paletteer) #colours for plotting\nlibrary(arrow) #read/write data\nlibrary(galah) #Nankeen Kestrel observations\nlibrary(luna) #package to source land cover data\n\n# Kestrel Data\n#kestrel_dat <- read_parquet()\n```\n:::\n\n\nNow, lets grab the Nankeen Kestrel observations from ALA. This bird holds a special place in my heart, as it was initially the focus of my PhD. We will source all observations from within the greater adelaide area.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n#configure package\n#galah_config(email = \"your-email-here\")\n```\n:::\n\n\nThe SHAR package has a few different statistical methods for\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

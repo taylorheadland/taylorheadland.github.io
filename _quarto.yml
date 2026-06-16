@@ -4,6 +4,8 @@ project:
 
 website:
   title: "Taylor Headland"
+  site-url: "https://taylorheadland.github.io"
+  open-graph: true
   favicon: Images/favicon.ico
   navbar:
     logo: Images/favicon-32x32.png

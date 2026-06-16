@@ -1,0 +1,207 @@
+---
+title: "Package spotlight - SHAR"
+description: |
+  Here I use the SHAR R package to find which land cover types the Nankeen Kestrel is associated with around greater Adelaide. 
+date: ""
+title-block-banner: "#1434A4"
+title-block-banner-color: "#ffffff"
+categories: 
+  - Modelling
+  - Citizen Science
+  - Raptors
+freeze: true
+format: html
+editor_options:
+  chunk_output_type: console
+---
+
+Understanding wildlife habitat associations is a critical part of effective conservation management. In this post, I'll walk you through an R package, Species Habitat Associations in R (SHAR), that helps to determine these relationships. The package website can be found [here](https://r-spatialecology.github.io/shar/index.html).
+
+First up, lets load the packages and data required for the analysis. We need species observation data, which I'll be grabbing from the Atlas of Living Australia (ALA) for the Nankeen Kestrel, and environmental data, which I'll be sourcing from the luna R package in the form of land cover data.
+
+```{r}
+#| label: package-setup
+#| echo: true
+#| warning: false
+library(shar) #Species Habitat Associations in R
+library(dplyr) #tidy data/wrangling
+library(sf) #vector data operations
+library(terra) #raster data operations
+library(tidyterra) #raster plotting
+library(scales) #pretty scales
+library(paletteer) #colours for plotting
+library(galah) #Nankeen Kestrel observations
+library(mapgl) #interactive mapping
+```
+
+Let's load in the study area of Greater Adelaide.
+
+```{r}
+#| label: download-area
+#| echo: true
+#| warning: false
+# load parquet file of greater Adelaide region
+Adelaide <- read_sf("data/SHAR_Analysis/Greater_Adelaide.parquet")
+
+# get bbox of this object
+Adelaide_bbox <- st_bbox(Adelaide)
+```
+
+And here is a neat little visualisation of the area using the fantastic mapgl package. The area in blue symbolises the greater Adelaide region.
+
+```{r}
+#| label: Greater-Adelaide-visualisation
+#| echo: true
+#| warning: false
+ADL_map <- mapboxgl(mapbox_style("outdoors"), bounds = Adelaide) |>
+  add_fill_layer(
+    id = "Adelaide-outline",
+    source = Adelaide,
+    fill_color = "blue",
+    fill_opacity = 0.5
+  )
+
+ADL_map
+```
+
+Now, lets grab the Nankeen Kestrel observations from ALA. This bird holds a special place in my heart, as it was initially the focus of my PhD. We will source all observations from within the greater Adelaide area from 2020 onwards.
+
+```{r}
+#| label: species-obs-download
+#| echo: true
+#| warning: false
+# configure package
+galah_config(email = "taylor.headland@gmail.com")
+
+# download occurrences
+kestrels <- galah_call() |>
+  identify("Falco cenchroides") |>
+  filter(year >= 2016, year <= 2025) |>
+  galah_apply_profile(ALA) |>
+  galah_geolocate(Adelaide, type = "bbox") |>
+  atlas_occurrences()
+
+# create sf object for plotting and filtering
+kestrels_sf <- st_as_sf(
+  kestrels,
+  coords = c("decimalLongitude", "decimalLatitude"),
+  crs = 4326
+) |>
+  #transform to projected crs for analysis
+  st_transform(crs = 7854)
+```
+
+And here is a plot of those points!
+
+```{r}
+Adelaide <- Adelaide |>
+  st_transform(crs = 7854)
+
+ADL_kestrel_map <- mapboxgl(mapbox_style("outdoors"), bounds = kestrels_sf) |>
+  add_line_layer(
+    id = "Adelaide-outline",
+    source = Adelaide,
+    line_color = "black",
+    line_width = 2,
+    line_opacity = 0.8
+  ) |>
+  add_circle_layer(
+    id = "points-layer",
+    source = kestrels_sf,
+    circle_color = "red",
+    circle_radius = 8,
+    circle_stroke_color = "white",
+    circle_stroke_width = 1
+  )
+
+ADL_kestrel_map
+```
+
+As I've used a bounding box to collect the observations within the greater Adelaide region, and not the area within the region of interest (it had too many vertices so threw an error), some of the records lie outside out greater Adelaide. I will now filter the records to be only within the greater Adelaide area.
+
+```{r}
+kestrels_sf_crop <- kestrels_sf |>
+  st_intersection(Adelaide)
+
+# verify this worked
+ADL_kestrel_crop_map <- mapboxgl(
+  mapbox_style("outdoors"),
+  bounds = kestrels_sf_crop
+) |>
+  add_line_layer(
+    id = "Adelaide-outline",
+    source = Adelaide,
+    line_color = "black",
+    line_width = 2,
+    line_opacity = 0.8
+  ) |>
+  add_circle_layer(
+    id = "points-layer",
+    source = kestrels_sf_crop,
+    circle_color = "red",
+    circle_radius = 8,
+    circle_stroke_color = "white",
+    circle_stroke_width = 1
+  )
+
+ADL_kestrel_crop_map
+```
+
+Voila!
+
+We have our points, and now we need our categorical raster. I have sourced data from the National Vegetation Information System (NVIS) v7.0 for the \_\_\_\_\_.
+
+The SHAR package has a few different statistical methods for
+
+```{r}
+LC_data <- rast("data/SHAR_Analysis/DW_Greater_Adelaide.tif")
+
+LC_data_clean <- LC_data |>
+  project("EPSG:7854", method = "near") |>
+  as.factor() |>
+  tidyterra::select(label2_mode) |>
+  droplevels(0) |>
+  tidyterra::drop_na()
+
+dw_coltab <- data.frame(
+  value = 1:9,
+  col = c(
+    "#419bdf", # 1 - water
+    "#397d49", # 2 - trees
+    "#88b053", # 3 - grass
+    "#7a87c6", # 4 - flooded_vegetation
+    "#e49635", # 5 - crops
+    "#dfc35a", # 6 - shrub_and_scrub
+    "#c4281b", # 7 - built
+    "#a59b8f", # 8 - bare
+    "#b39fe1" # 9 - snow_and_ice
+  )
+)
+```
+
+```{r}
+#### Need to reproject all spatial data to EPSG:7854 as spatstat only takes projected coordinates ####
+
+roi_owin <- spatstat.geom::as.owin(Adelaide$geometry)
+
+# Extract the coordinates as a matrix from the sf occurrences object
+data_sf_coords <- sf::st_coordinates(kestrels_sf_crop)
+
+# Create a spatial points pattern object containing the occurrence data
+data_sf_ppp <- spatstat.geom::as.ppp(X = data_sf_coords, W = roi_owin)
+
+# Fit point pattern process to data
+rand_pattern <- shar::fit_point_process(pattern = data_sf_ppp, n_random = 5)
+
+# Establish significance level
+sig_level <- 0.01
+
+# Run analysis
+results <- shar::results_habitat_association(
+  pattern = rand_pattern,
+  raster = LC_data_clean,
+  significance_level = sig_level
+)
+
+results
+```

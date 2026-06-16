@@ -13,17 +13,19 @@ about:
       url:  "https://github.com/taylorheadland"
     - icon: linkedin
       href: "https://www.linkedin.com/in/taylor-headland-230236163/"
-    - icon: google
+    - text: "{{< iconify academicons google-scholar >}}"
       href: "https://scholar.google.com.au/citations?user=Fh3z7X4AAAAJ&hl=en"
+    - text: "{{< iconify academicons orcid >}}"
+      href: "https://orcid.org/0000-0002-7975-4651"
 ---
 
-::: {#hero-heading}
+:::: {#hero-heading}
 ::: column-body-outset
 ## Education
 
-**Ph. D.** \| Jun 2021 -- Present\
+**Ph. D.** \| Jun 2021 - October 2025\
 Flinders University\
-\* Thesis: *The Ecology of the Nankeen Kestrel across an urban/rural gradient*
+\* Thesis: *Urban tolerance of raptors at the global, regional, and local levels*
 
 **Honours** \| Feb 2020 - Mar 2021\
 University of Adelaide\
@@ -36,7 +38,7 @@ University of Adelaide\
 
 ## Experience
 
-**Postgraduate Research** \| Jun 2021 - Present\
+**Postgraduate Research** \| Jun 2021 - October 2025\
 College of Science and Engineering, Flinders University
 
 **Bird Surveys** \| Jan 2020 - Present\
@@ -47,6 +49,6 @@ City of Onkaparinga Council (with A Rocha Australia)\
 GVI South Africa\
 Bushwise Field Guides South Africa\
 :::
-:::
+::::
 
 ------------------------------------------------------------------------
